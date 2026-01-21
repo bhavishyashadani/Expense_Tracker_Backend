@@ -11,7 +11,7 @@ require("dotenv").config();
 const app = express();
 const Port = process.env.PORT;
 const Mongo_URL = process.env.MONGO_URI;
-app.use(cors());
+app.use(cors("https://smartspend-ai1.netlify.app/"));
 app.use(express.json());
 
 app.use("/auth", authRoutes);
