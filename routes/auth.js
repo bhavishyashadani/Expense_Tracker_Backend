@@ -16,8 +16,54 @@ function isValidPassword(password) {
   );
 }
 
+/**
+ * @swagger
+ * tags:
+ *   name: Auth
+ *   description: Authentication operations
+ */
+
 /* ================= SIGNUP ================= */
 
+/**
+ * @swagger
+ * /auth/signup:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - uname
+ *               - pass
+ *               - userName
+ *               - cashBalance
+ *               - onlineBalance
+ *               - monthlyBudget
+ *             properties:
+ *               uname:
+ *                 type: string
+ *               pass:
+ *                 type: string
+ *               userName:
+ *                 type: string
+ *               cashBalance:
+ *                 type: number
+ *               onlineBalance:
+ *                 type: number
+ *               monthlyBudget:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: User signed up successfully
+ *       400:
+ *         description: Bad request (Invalid password, budget constraint, or username exists)
+ */
 Router.post("/signup", async function (req, res) {
   const {
     uname,
@@ -59,6 +105,33 @@ Router.post("/signup", async function (req, res) {
 
 /* ================= SIGNIN ================= */
 
+/**
+ * @swagger
+ * /auth/signin:
+ *   post:
+ *     summary: Log in a user
+ *     tags: [Auth]
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userName
+ *               - pass
+ *             properties:
+ *               userName:
+ *                 type: string
+ *               pass:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login successful, returns JWT token
+ *       401:
+ *         description: Wrong credentials
+ */
 Router.post("/signin", async function (req, res) {
   const { userName, pass } = req.body;
 

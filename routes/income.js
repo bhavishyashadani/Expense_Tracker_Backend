@@ -21,8 +21,27 @@ async function getRecentIncomes(userId) {
   }).sort({ createdAt: -1 });
 }
 
+/**
+ * @swagger
+ * tags:
+ *   name: Income
+ *   description: Income operations
+ */
+
 /* ================= LIST (last 15 days) ================= */
 
+/**
+ * @swagger
+ * /income/list:
+ *   get:
+ *     summary: Get recent incomes (last 15 days)
+ *     tags: [Income]
+ *     responses:
+ *       200:
+ *         description: A list of incomes
+ *       500:
+ *         description: Server Error
+ */
 Router.get("/list", authMiddleware, async (req, res) => {
   try {
     const incomes = await getRecentIncomes(req.userId);
@@ -34,6 +53,35 @@ Router.get("/list", authMiddleware, async (req, res) => {
 
 /* ================= ADD ================= */
 
+/**
+ * @swagger
+ * /income/add:
+ *   post:
+ *     summary: Add an income
+ *     tags: [Income]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - amount
+ *               - paymentType
+ *               - receivedFrom
+ *             properties:
+ *               amount:
+ *                 type: number
+ *               paymentType:
+ *                 type: string
+ *               receivedFrom:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Income added successfully
+ *       500:
+ *         description: Failed to add income
+ */
 Router.post("/add", authMiddleware, async (req, res) => {
   try {
     const { amount, paymentType, receivedFrom } = req.body;
@@ -63,6 +111,43 @@ Router.post("/add", authMiddleware, async (req, res) => {
 
 /* ================= EDIT ================= */
 
+/**
+ * @swagger
+ * /income/edit/{id}:
+ *   put:
+ *     summary: Edit an income
+ *     tags: [Income]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - amount
+ *             properties:
+ *               amount:
+ *                 type: number
+ *               paymentType:
+ *                 type: string
+ *               receivedFrom:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Income edited successfully
+ *       403:
+ *         description: Edit allowed only within 15 days
+ *       404:
+ *         description: Income not found
+ *       500:
+ *         description: Failed to edit income
+ */
 Router.put("/edit/:id", authMiddleware, async (req, res) => {
   try {
     const income = await Income.findOne({
@@ -112,6 +197,28 @@ Router.put("/edit/:id", authMiddleware, async (req, res) => {
 
 /* ================= DELETE ================= */
 
+/**
+ * @swagger
+ * /income/delete/{id}:
+ *   delete:
+ *     summary: Delete an income
+ *     tags: [Income]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Income deleted successfully
+ *       403:
+ *         description: Delete allowed only within 15 days
+ *       404:
+ *         description: Income not found
+ *       500:
+ *         description: Failed to delete income
+ */
 Router.delete("/delete/:id", authMiddleware, async (req, res) => {
   try {
     const income = await Income.findOne({

@@ -5,8 +5,49 @@ const upload = require("../middleware/upload");
 const model = require("../utils/gemini");
 const Router = Express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Expense
+ *   description: Expense operations
+ */
+
 /* ================= ADD EXPENSE ================= */
 
+/**
+ * @swagger
+ * /expense/add/{categoryId}:
+ *   post:
+ *     summary: Add an expense
+ *     tags: [Expense]
+ *     parameters:
+ *       - in: path
+ *         name: categoryId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - amount
+ *               - paymentType
+ *             properties:
+ *               amount:
+ *                 type: number
+ *               paymentType:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Expense added successfully
+ *       400:
+ *         description: Insufficient balance or budget exceeded
+ *       404:
+ *         description: User not found
+ */
 Router.post("/add/:categoryId", authMiddleware, async function (req, res) {
   const { amount, paymentType } = req.body;
   const categoryId = req.params.categoryId;
@@ -50,6 +91,37 @@ Router.post("/add/:categoryId", authMiddleware, async function (req, res) {
 
 /* ================= EDIT EXPENSE ================= */
 
+/**
+ * @swagger
+ * /expense/edit/{expenseId}:
+ *   put:
+ *     summary: Edit an expense
+ *     tags: [Expense]
+ *     parameters:
+ *       - in: path
+ *         name: expenseId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - amount
+ *             properties:
+ *               amount:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Expense edited successfully
+ *       400:
+ *         description: Insufficient balance or budget exceeded
+ *       404:
+ *         description: Expense not found
+ */
 Router.put("/edit/:expenseId", authMiddleware, async function (req, res) {
   const { amount } = req.body;
   const expenseId = req.params.expenseId;
@@ -106,6 +178,24 @@ Router.put("/edit/:expenseId", authMiddleware, async function (req, res) {
 
 /* ================= DELETE EXPENSE ================= */
 
+/**
+ * @swagger
+ * /expense/delete/{expenseId}:
+ *   delete:
+ *     summary: Delete an expense
+ *     tags: [Expense]
+ *     parameters:
+ *       - in: path
+ *         name: expenseId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Expense deleted successfully
+ *       404:
+ *         description: Expense not found
+ */
 Router.delete("/delete/:expenseId", authMiddleware, async function (req, res) {
   const expenseId = req.params.expenseId;
   const userId = req.userId;
@@ -143,6 +233,22 @@ Router.delete("/delete/:expenseId", authMiddleware, async function (req, res) {
 
 /* ================= VIEW TRANSACTIONS ================= */
 
+/**
+ * @swagger
+ * /expense/list/{categoryId}:
+ *   get:
+ *     summary: Get expenses by category
+ *     tags: [Expense]
+ *     parameters:
+ *       - in: path
+ *         name: categoryId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: A list of expenses
+ */
 Router.get("/list/:categoryId", authMiddleware, async function (req, res) {
   const categoryId = req.params.categoryId;
   const userId = req.userId;
@@ -155,6 +261,31 @@ Router.get("/list/:categoryId", authMiddleware, async function (req, res) {
   res.json(expenses);
 });
 //Scan bill Endpoint
+
+/**
+ * @swagger
+ * /expense/scan-bill:
+ *   post:
+ *     summary: Scan a bill image to extract expense details
+ *     tags: [Expense]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               bill:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Extracted bill details
+ *       400:
+ *         description: No image uploaded
+ *       500:
+ *         description: Failed to scan bill
+ */
 Router.post(
   "/scan-bill",
   authMiddleware, 
@@ -206,6 +337,40 @@ Router.post(
   }
 );
 //* ================= SMART ADD EXPENSE (FIND OR CREATE CATEGORY) ================= */
+
+/**
+ * @swagger
+ * /expense/add-smart:
+ *   post:
+ *     summary: Smart add an expense (creates category if not exists)
+ *     tags: [Expense]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - amount
+ *               - categoryName
+ *               - paymentType
+ *             properties:
+ *               amount:
+ *                 type: number
+ *               categoryName:
+ *                 type: string
+ *               paymentType:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Expense added successfully
+ *       400:
+ *         description: Insufficient balance or budget exceeded
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server Error
+ */
 Router.post("/add-smart", authMiddleware, async function (req, res) {
   try {
     const { amount, categoryName, paymentType } = req.body;

@@ -4,10 +4,32 @@ const authMiddleware = require("../middleware/authentication.js");
 
 const Router = Express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: User
+ *   description: User operations
+ */
+
 /*
  GET /user/profile
  Protected route
 */
+
+/**
+ * @swagger
+ * /user/profile:
+ *   get:
+ *     summary: Get user profile information
+ *     tags: [User]
+ *     responses:
+ *       200:
+ *         description: User profile details
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Failed to fetch profile
+ */
 Router.get("/profile", authMiddleware, async function (req, res) {
   try {
     const user = await User.findById(req.userId);

@@ -19,7 +19,7 @@ function authMiddleware(req, res, next) {
 
   try {
     // 3️⃣ Verify token
-    const decoded = jwt.verify(token, secret);
+    const decoded = jwt.verify(token, secret); 
 
     // 4️⃣ Attach userId to request
     req.userId = decoded.userId;
